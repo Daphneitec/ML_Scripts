@@ -28,6 +28,9 @@ cols_to_encode = ['ROUTE_TYPE', 'LANE_NAME', 'O_Entity_Type', 'D_Entity_Type', '
 
 edf = pd.get_dummies(df, columns=cols_to_encode, drop_first=True)
 
+##Print Data Columns
+for col in edf.columns:
+    print(col)
 
 ##Print result
 df_test = df.iloc[s:t]
@@ -56,6 +59,18 @@ xgbc = xgb(learning_rate=0.5,
                     random_state=42)
 
 mcl = xgbc.fit(X_train, y_train, eval_metric='mlogloss')
+print(mcl.feature_importances_)
+data = {'Feature': X_train.columns,
+        'Importance': mcl.feature_importances_
+        }
+
+plotdata = pd.DataFrame(data, columns=['Feature', 'Importance'])
+
+plotdata.plot(x='Feature', y='Importance', kind="bar")
+pl.show()
+
+##pl.bar(range(len(mcl.feature_importances_)), mcl.feature_importances_)
+#pl.show()
 pred = mcl.predict(X_test)
 df_test['Predict'] = pred    ## [x+1 for x in pred]
 print(df_test)
